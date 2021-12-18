@@ -30,10 +30,10 @@ class TorchModel(nn.Module):
     def forward(self, x, y=None):
         x = self.embedding(x)  #input shape:(batch_size, sen_len) (20,6)
         # print(x.shape)
-        x = self.conv(x.reshape(20 * 20, 1, -1))      #input shape:(batch_size, sen_len, input_dim) (20,6,20)
+        x = self.conv(x.reshape(-1, 1, 6))      #input shape:(batch_size, sen_len, input_dim) (20,6,20)
         # print(x.shape)
         x = self.dropout(x)    #input shape:(batch_size, sen_len, input_dim)
-        x = self.activation(x.reshape(20, 6, 20)) #input shape:(batch_size, sen_len, input_dim)
+        x = self.activation(x.reshape(-1, 6, 20)) #input shape:(batch_size, sen_len, input_dim)
         x = self.pool(x.transpose(1,2)).squeeze() #input shape:(batch_size, sen_len, input_dim)
         x = self.classify(x)   #input shape:(batch_size, input_dim)
         y_pred = self.activation(x)               #input shape:(batch_size, 1)
@@ -162,5 +162,5 @@ def predict(model_path, vocab_path, input_strings):
 
 if __name__ == "__main__":
     main()
-    # test_strings = ["juvxee", "yrwfrg", "rbweqg", "nlhdww"]
-    # predict("model.pth", "vocab.json", test_strings)
+    test_strings = ["juvxee", "yrwfrg", "rbweqg", "nlhdw1"]
+    predict("model.pth", "vocab.json", test_strings)
