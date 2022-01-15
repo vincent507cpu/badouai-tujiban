@@ -118,7 +118,7 @@ if __name__ == "__main__":
     bayes_feature_dict = bayes_algorithm(corpus, all_words)
     # print(bayes_feature_dict)
     # query = "菲律宾向越南示好归还所扣7艘越方渔船"
-
+    path = "valid_tag_news.json"
     # corpus, all_words, all_class, _ = load_data("valid_tag_news.json")
     num, correct = 0, 0
     with open(path, encoding="utf8") as f:

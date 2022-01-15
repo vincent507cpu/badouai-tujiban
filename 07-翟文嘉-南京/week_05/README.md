@@ -4,7 +4,7 @@ Building prefix dict from the default dictionary ...
 Loading model from cache /var/folders/h4/qdmlvsbx67d1r79wvxt1nqhm0000gn/T/jieba.cache
 Loading model cost 0.361 seconds.
 Prefix dict has been built successfully.
-测试集中一共有 1440 条样本，正确率为 100.00 %。
+测试集中一共有 360 条样本，正确率为 70.56 %。
 
 Process finished with exit code 0
 ```
