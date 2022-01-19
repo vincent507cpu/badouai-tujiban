@@ -22,7 +22,7 @@ class Corrector:
         #候选字字典
         self.sub_dict = self.load_tongyinzi("tongyin.txt")
         #成句概率的提升超过阈值则保留修改
-        self.threshold = 7
+        self.threshold = 6
 
     #实际上不光是同音字，同形字等也可以加入，本质上是常用的错字
     def load_tongyinzi(self, path):
