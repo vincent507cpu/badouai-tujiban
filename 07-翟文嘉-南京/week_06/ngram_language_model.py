@@ -3,7 +3,7 @@ from collections import defaultdict
 
 
 class NgramLanguageModel:
-    def __init__(self, corpus=None, n=3):
+    def __init__(self, corpus, n=3):
         self.n = n
         self.sep = "🗡"     # 用来分割两个词，没有实际含义，只要是字典里不存在的符号都可以
         self.sos = "<sos>"    #start of sentence，句子开始的标识符

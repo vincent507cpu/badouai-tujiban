@@ -61,6 +61,7 @@ class Corrector:
             if max(candidate_probs) > self.threshold:
                 #找到最大成句概率对应的替换字
                 sub_char = candidates[candidate_probs.index(max(candidate_probs))]
+                # print(sub_char)
                 print("第%d个字建议修改：%s -> %s, 概率提升： %f" %(index, char, sub_char, max(candidate_probs)))
                 fix[index] = sub_char
         #替换后字符串
@@ -72,7 +73,7 @@ corpus = open("财经.txt", encoding="utf8").readlines()
 lm = NgramLanguageModel(corpus, 3)
 
 cr = Corrector(lm)
-string = "美联储可能才取新的措施来提针每国经济"
+string = "国际市场分额提升宝持全球领先"
 fix_string = cr.correction(string)
 print("修改前：", string)
 print("修改后：", fix_string)
