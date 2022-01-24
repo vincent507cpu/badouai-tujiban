@@ -68,8 +68,8 @@ def confusion_prob(sentence, confusion, model):
                 new_sentence = sentence.replace(sentence[index], new_char)
                 new_prob = sentence_prob(new_sentence, model)
                 diff = new_prob - prob
-                errata[char].append(np.array(diff))
-
+                # errata[char].append(np.array(diff))
+                errata[char].append(diff.item())
     return errata
 
 
@@ -78,12 +78,14 @@ def main():
     model = load_trained_language_model()
     confusion = build_confusion()
     errata = confusion_prob(sentence, confusion, model)
+    # print(errata)
     result = []
     for char, diff in errata.items():
         min_diff = min(diff)
         min_diff_idx = diff.index(min_diff)
         result.append([char, min_diff, min_diff_idx])
     result = sorted(result, key=lambda x: x[1]) # 将熵减幅度最大的字置前
+    print(result)
     print('-' * 30)
     print(result[0][0], "->", confusion[result[0][0]][result[0][2]])
     print(result[1][0], "->", confusion[result[1][0]][result[1][2]])
