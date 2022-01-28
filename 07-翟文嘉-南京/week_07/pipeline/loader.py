@@ -82,9 +82,5 @@ def load_data(data_path, config, shuffle=True):
 
 if __name__ == "__main__":
     from config import Config
-    # dg = DataGenerator("valid_tag_news.json", Config)
-    # print(dg[1])
-    data = load_data(Config['train_data_path'], Config)
+    data = load_data("../valid_tag_news.json", Config)
     print(next(iter(data)))
-    vocab = load_vocab(Config['vocab_path'])
-    print(vocab)

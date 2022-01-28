@@ -41,7 +41,7 @@ class Evaluator:
     def show_stats(self):
         correct = self.stats_dict["correct"]
         wrong = self.stats_dict["wrong"]
-        self.logger.info("预测集合条目总量：%d" % (correct +wrong))
+        self.logger.info("预测集合条目总量：%d" % (correct + wrong))
         self.logger.info("预测正确条目：%d，预测错误条目：%d" % (correct, wrong))
         self.logger.info("预测准确率：%f" % (correct / (correct + wrong)))
         self.logger.info("--------------------")

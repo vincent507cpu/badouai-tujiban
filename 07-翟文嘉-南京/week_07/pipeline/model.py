@@ -58,13 +58,14 @@ class TorchModel(nn.Module):
     #当输入真实标签，返回loss值；无真实标签，返回预测值
     def forward(self, x, target=None):
         if self.use_bert:  # bert返回的结果是 (sequence_output, pooler_output)
-            x = self.encoder(x)
+            x = self.encoder(x, return_dict=False)
         else:
             x = self.embedding(x)  # input shape:(batch_size, sen_len)
             x = self.encoder(x)  # input shape:(batch_size, sen_len, input_dim)
 
         if isinstance(x, tuple):  #RNN类的模型会同时返回隐单元向量，我们只取序列结果
             x = x[0]
+        # print(x)
         #可以采用pooling的方式得到句向量
         if self.pooling_style == "max":
             self.pooling_layer = nn.MaxPool1d(x.shape[1])

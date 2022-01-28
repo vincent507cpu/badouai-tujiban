@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
 
 import torch
-import random
 import os
+import random
 import numpy as np
 import logging
 from config import Config
 from model import TorchModel, choose_optimizer
 from evaluate import Evaluator
 from loader import load_data
+import pandas as pd
+from collections import defaultdict
 
 logging.basicConfig(level=logging.INFO, format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
@@ -42,6 +44,7 @@ def main(config):
     #加载效果测试类
     evaluator = Evaluator(config, model, logger)
     #训练
+    max_acc = 0
     for epoch in range(config["epoch"]):
         epoch += 1
         model.train()
@@ -62,24 +65,36 @@ def main(config):
                 logger.info("batch loss %f" % loss)
         logger.info("epoch average loss: %f" % np.mean(train_loss))
         acc = evaluator.eval(epoch)
-    # model_path = os.path.join(config["model_path"], "epoch_%d.pth" % epoch)
-    # torch.save(model.state_dict(), model_path)  #保存模型权重
-    return acc
+        
+        if acc >= max_acc:
+            model_path = os.path.join(config["model_path"], f"{config['model_type']}_lr{config['learning_rate']}_hs{config['hidden_size']}_pooling{config['pooling_style']}_op{config['optimizer']}.pth")
+            torch.save(model.state_dict(), model_path)  #保存模型权重
+            max_acc = acc
+    return max_acc
 
 if __name__ == "__main__":
-    main(Config)
-
+    # main(Config)
+    res = defaultdict(list)
+    
     #对比所有模型
     #中间日志可以关掉，避免输出过多信息
     # 超参数的网格搜索
-    # for model in ["gated_cnn"]:
-    #     Config["model_type"] = model
-    #     for lr in [1e-2, 1e-3]:
-    #         Config["learning_rate"] = lr
-    #         for hidden_size in [64, 128, 256]:
-    #             Config["hidden_size"] = hidden_size
-    #             for batch_size in [64, 128]:
-    #                 Config["batch_size"] = batch_size
-    #                 for pooling_style in ["max", "avg"]:
-    #                     Config["pooling_style"] = pooling_style
-    #                     print("最后一轮准确率：", main(Config), "当前配置：", Config)
+    # for model in 'fast_text', ["cnn", 'gru', 'bert']:
+    for model in ['fast_text', 'cnn',  'gru', 'bert']:
+        Config["model_type"] = model
+        for lr in [1e-2, 1e-3, 1e-4]:
+            Config["learning_rate"] = lr
+            for hidden_size in [64, 128, 256]:
+                Config["hidden_size"] = hidden_size
+                for optimizer in ['adam', 'sgd']:
+                    Config["optimizer"] = optimizer
+                    for pooling_style in ["max", "avg"]:
+                        Config["pooling_style"] = pooling_style
+                        acc = main(Config)
+                        # print("最后一轮准确率：", main(Config), "当前配置：", Config)
+                        for key in Config.keys():
+                            res[key].append(Config[key])
+                        res['acc'].append(acc)
+
+    df = pd.DataFrame(res)
+    df.to_csv('output/result.csv', header=True, index=False)

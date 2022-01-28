@@ -68,7 +68,7 @@ class Corrector:
         return "".join(char_list)
 
 
-corpus = open("财经.txt", encoding="utf8").readlines()
+corpus = open("corpus/财经.txt", encoding="utf8").readlines()
 lm = NgramLanguageModel(corpus, 3)
 
 cr = Corrector(lm)
