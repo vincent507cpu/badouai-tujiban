@@ -1,4 +1,4 @@
-运行 `inference.py`，在网易新闻上随机选择新闻标题，结果如下：
+运行 `inference.py`，在网易新闻上随机选择新闻标题，训练 `Bert` 模型，结果如下：
 ```python
 type some words: 习近平春节前夕赴山西看望慰问基层干部群众
 prediction for "习近平春节前夕赴山西看望慰问基层干部群众": 军事
