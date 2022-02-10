@@ -17,12 +17,13 @@ with open(Config['schema_path']) as f:
 
 vocab2id = load_vocab(Config['vocab_path'])
 id2vocab = dict((val, key) for key, val in vocab2id.items())
+Config["vocab_size"] = len(vocab2id)
 
 
 def find_entity(txt, pred):
 	res = defaultdict(list)
-	# txt = txt.numpy()
-	txt = ''.join([id2vocab.get(t.item(), '[UNK]') for t in txt if t != 0])
+	# txt = ''.join([id2vocab.get(t.item(), '[UNK]') for t in txt if t != 0])
+
 	pred = ''.join([str(x) for x in pred])
 	for loc in re.finditer('(04+)', pred):
 		s, e = loc.span()
@@ -37,32 +38,52 @@ def find_entity(txt, pred):
 		s, e = time.span()
 		res['time'].append(txt[s:e])
 
-	res['location'] += re.findall('日本|长江|合肥市|也门', txt)
-	res['person'] += re.findall('邓小平|丁关根|索尼亚·甘地|金大中|', txt)
-	res['oranization'] += re.findall('WTA|全国政协|长江航道局', txt)
-
 	if res is not None:
-		print('原句：', txt)
-		print('抽取实体：', dict(res))
+		print('正则表达式处理前：', dict(res))
+
+		if re.findall('巴黎|日本|张家港市|美国', txt):
+			entity = [s for s in re.findall('巴黎|日本|张家港市|美国', txt) if s]
+			res['location'] += entity
+		if re.findall('邓小平|丁关根|索尼亚·甘地|金大中', txt):
+			entity = [s for s in re.findall('邓小平|丁关根|索尼亚·甘地|金大中|', txt) if s]
+			res['person'] += entity
+		if re.findall('WTA|全国政协|长江航道局|国大党|国务院', txt):
+			entity = [s for s in re.findall('WTA|全国政协|长江航道局|国大党|国务院', txt) if s]
+			res['oranization'] += entity
+
+		for key, val in res.items():
+			res[key] = list(set(val))
+		print('正则表达式处理后：', dict(res))
 		print('\n')
 
 
 def main(config):
-	# 加载数据
-	test_data = load_data(config["test_data_path"], config, shuffle=False)
-	vocab2id = load_vocab('chars.txt')
-	id2vocab = dict((id_, vocab) for vocab, id_ in vocab2id.items())
+	# test_data = load_data(config['test_data_path'], config)
 	# 加载模型
 	model = TorchModel(config)
 	model.load_state_dict(torch.load(config['model_path'] + '/epoch_20.pth'))
 	model.eval()
 
-	for txts, _ in test_data:
-		with torch.no_grad():
-			preds = model(txts)
+	# for txts, _ in test_data:
+	# 	with torch.no_grad():
+	# 		preds = model(txts)
+	#
+	# 	for txt, pred in zip(txts, preds):
+	# 		find_entity(txt, pred)
+	while True:
+		input_txt = input('输入句子：')
+		if input_txt != 'exit':
+			new = [vocab2id.get(t, 0) for t in input_txt]
+			new = new[:config['max_length']]
+			new += [0] * (config['max_length'] - len(new))
+			new = torch.LongTensor(new).unsqueeze(0)
 
-		for txt, pred in zip(txts, preds):
-			find_entity(txt, pred)
+			with torch.no_grad():
+				pred = model(new)
+
+			find_entity(input_txt, pred)
+		else:
+			break
 
 
 if __name__ == '__main__':
